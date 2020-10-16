@@ -1,3 +1,5 @@
+import { timeStamp } from "console"
+
 const w : number = window.innerWidth 
 const h : number = window.innerHeight 
 const parts : number = 3
@@ -146,5 +148,68 @@ class Animator {
             this.animated = false 
             clearInterval(this.interval)
         }
+    }
+}
+
+class TFCBNode {
+    next : TFCBNode 
+    prev : TFCBNode 
+    state : State 
+    constructor(private i : number) {
+        this.state = new State()
+    }
+
+    addNeighbor() {
+        if (this.i < colors.length - 1) {
+            this.next = new TFCBNode(this.i + 1)
+            this.next.prev = this 
+        }
+    }
+
+    draw(context : CanvasRenderingContext2D) {
+        DrawingUtil.drawTFCBNode(context, this.i, this.state.scale)
+    }
+
+    update(cb : Function) {
+        this.state.update(cb)
+    }
+
+    startUpdating(cb : Function) {
+        this.state.startUpdating(cb)
+    }
+    
+    getNext(dir : number, cb : Function) : TFCBNode {
+        var curr : TFCBNode = this.prev 
+        if (dir == 1) {
+            curr = this.next 
+        }
+        if (curr) {
+            return curr 
+        }
+        cb()
+        return this 
+    }
+}
+
+class TriFillCornerBox {
+
+    curr : TFCBNode = new TFCBNode(0)
+    dir : number = 1
+
+    draw(context : CanvasRenderingContext2D) {
+        this.curr.draw(context)
+    }
+
+    update(cb : Function) {
+        this.curr.update(() => {
+            this.curr = this.curr.getNext(this.dir, () => {
+                this.dir *= -1
+            })
+            cb()
+        })
+    }
+
+    startUpdating(cb : Function) {
+        this.curr.startUpdating(cb)
     }
 }

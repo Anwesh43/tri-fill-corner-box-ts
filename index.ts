@@ -27,3 +27,49 @@ class ScaleUtil {
         return Math.sin(scale * Math.PI)
     } 
 }
+
+class DrawingUtil {
+
+    static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number) {
+        context.beginPath()
+        context.moveTo(x1, y1)
+        context.lineTo(x2, y2)
+        context.stroke()
+    }
+
+    static drawCornerFillBox(context : CanvasRenderingContext2D, scale : number) {
+        context.save()
+        context.beginPath()
+        context.moveTo(0, h)
+        context.lineTo(w, 0)
+        context.lineTo(w, h)
+        context.lineTo(0, h)
+        context.clip()
+        context.fillRect(0, 0, w * scale, h)
+        context.restore()
+    }
+
+    static drawTriFillCornerBox(context : CanvasRenderingContext2D, scale : number) {
+        const sf : number = ScaleUtil.sinify(scale)
+        const sf1 : number = ScaleUtil.divideScale(sf, 0, parts)
+        DrawingUtil.drawLine(context, 0, h, w * sf1, h * (1 - sf1))
+        for (var j = 0; j < 2; j++) {
+            context.save()
+            context.translate(w / 2, h / 2)
+            context.scale(1 - 2 * j, 1 - 2 * j)
+            context.save()
+            context.translate(-w / 2, -h / 2)
+            DrawingUtil.drawCornerFillBox(context, ScaleUtil.divideScale(sf, j + 1, parts))
+            context.restore()
+            context.restore()
+        }
+    }
+
+    static drawTFCBNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        context.lineWidth = Math.min(w, h) / strokeFactor 
+        context.lineCap = 'round'
+        context.strokeStyle = colors[i]
+        context.fillStyle = colors[i]
+        DrawingUtil.drawTriFillCornerBox(context, scale)
+    }
+}

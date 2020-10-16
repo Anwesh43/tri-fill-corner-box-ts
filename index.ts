@@ -1,5 +1,3 @@
-import { timeStamp } from "console"
-
 const w : number = window.innerWidth 
 const h : number = window.innerHeight 
 const parts : number = 3
@@ -161,6 +159,7 @@ class TFCBNode {
     state : State 
     constructor(private i : number) {
         this.state = new State()
+        this.addNeighbor()
     }
 
     addNeighbor() {

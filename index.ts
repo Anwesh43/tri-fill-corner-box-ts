@@ -213,3 +213,25 @@ class TriFillCornerBox {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    tfcb : TriFillCornerBox = new TriFillCornerBox()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.tfcb.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.tfcb.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.tfcb.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
